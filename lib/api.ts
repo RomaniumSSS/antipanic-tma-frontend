@@ -109,9 +109,8 @@ export class ApiError extends Error {
 async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const initData = getInitData();
   
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
   };
   
   // Add auth header if we have initData (running in Telegram)
