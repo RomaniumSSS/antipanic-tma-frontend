@@ -6,7 +6,8 @@
 
 import { getInitData } from './telegram';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// AICODE-NOTE: Production URL as fallback — env var often doesn't work on Vercel
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://my-antipanic-bot-production.up.railway.app';
 
 // ============ Types (matching backend schemas) ============
 
