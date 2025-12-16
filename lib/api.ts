@@ -86,10 +86,27 @@ export interface TodayStepsResponse {
   completed: number;
 }
 
+export interface MicroHitVariant {
+  index: number;
+  text: string;
+}
+
 export interface MicroHitResponse {
-  micro_action: string;
+  variants: MicroHitVariant[];
   original_step: Step;
-  estimated_minutes: number;
+  blocker_type: string;
+}
+
+export interface CompleteStepResponse {
+  success: boolean;
+  xp_earned: number;
+  total_xp: number;
+  streak_updated: boolean;
+  new_streak: number;
+}
+
+export interface SkipStepResponse {
+  success: boolean;
 }
 
 // ============ API Error ============
@@ -177,14 +194,44 @@ export async function getTodaySteps(): Promise<TodayStepsResponse> {
 }
 
 /**
- * Generate micro-action for a step.
+ * Generate multiple micro-action variants for a step.
+ * 
+ * @param stepId - ID of the step user is stuck on
+ * @param blockerType - Type of blocker (fear, unclear, no_time, no_energy)
+ * @param blockerText - Additional details from user (optional)
  */
-export async function generateMicroHit(stepId: number, blockerText?: string): Promise<MicroHitResponse> {
+export async function generateMicroHit(
+  stepId: number,
+  blockerType: string,
+  blockerText?: string
+): Promise<MicroHitResponse> {
   return fetchAPI<MicroHitResponse>('/api/microhit', {
     method: 'POST',
     body: JSON.stringify({
       step_id: stepId,
+      blocker_type: blockerType,
       blocker_text: blockerText,
+    }),
+  });
+}
+
+/**
+ * Mark step as completed.
+ */
+export async function completeStep(stepId: number): Promise<CompleteStepResponse> {
+  return fetchAPI<CompleteStepResponse>(`/api/steps/${stepId}/complete`, {
+    method: 'POST',
+  });
+}
+
+/**
+ * Skip step with optional reason.
+ */
+export async function skipStep(stepId: number, reason?: string): Promise<SkipStepResponse> {
+  return fetchAPI<SkipStepResponse>(`/api/steps/${stepId}/skip`, {
+    method: 'POST',
+    body: JSON.stringify({
+      reason: reason || 'Не подошло',
     }),
   });
 }
